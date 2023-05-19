@@ -12,7 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @Sql({ "/drop_problemlog_schema.sql", "/create_problemlog_schema.sql" })
 @SqlMergeMode(MergeMode.MERGE)
@@ -33,9 +36,17 @@ public class ProblemLogCRUDTest {
 		Number id = documentContext.read("$.id");
 		assertThat(id).isEqualTo(10);
 
-		Double name = documentContext.read("$.name");
+		String name = documentContext.read("$.name");
 		assertThat(name).isEqualTo("3 sum");
+
+        Double difficulty = documentContext.read("$.difficulty");
+		assertThat(difficulty).isEqualTo(3.7);
+        
+        String url = documentContext.read("$.url");
+		assertThat(url).isEqualTo("https://leetcode.com/problems/3sum/");
+
+        OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
+        OffsetDateTime expectedTimestamp = OffsetDateTime.of(2004, 10, 19, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
+		assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
-
-
 }
