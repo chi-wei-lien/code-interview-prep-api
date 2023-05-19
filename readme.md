@@ -11,5 +11,5 @@ build app command:
 
 test app command: 
 ```
-./gradle test
+./gradlew test
 ```

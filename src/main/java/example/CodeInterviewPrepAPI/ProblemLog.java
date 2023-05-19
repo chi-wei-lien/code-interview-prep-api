@@ -3,10 +3,14 @@ package example.CodeInterviewPrepAPI;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import java.util.Objects;
 import java.time.OffsetDateTime;
 
+@Entity
+@Table(name = "problem_log")
 public class ProblemLog {
 
     private @Id @GeneratedValue Long id;
@@ -14,20 +18,24 @@ public class ProblemLog {
     private Double difficulty;
     private String url;
 
-    @Column(name = "offset_date_time", columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(name = "timestamp", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime timestamp;
 
-    public ProblemLog(String name, Double difficulty, String url) {
+    public ProblemLog() {}
+
+    public ProblemLog(String name, Double difficulty, String url, OffsetDateTime timestamp) {
         this.name = name;
         this.difficulty = difficulty;
         this.url = url;
+        this.timestamp = timestamp;
     }
 
-    public ProblemLog(Long id, String name, Double difficulty, String url) {
+    public ProblemLog(Long id, String name, Double difficulty, String url, OffsetDateTime timestamp) {
         this.id = id;
         this.name = name;
         this.difficulty = difficulty;
         this.url = url;
+        this.timestamp = timestamp;
     }
 
     // getters
@@ -43,8 +51,12 @@ public class ProblemLog {
         return difficulty;
     }
 
-    public String url() {
+    public String getUrl() {
         return url;
+    }
+
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
     }
 
     // setters
@@ -58,6 +70,10 @@ public class ProblemLog {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -74,7 +90,8 @@ public class ProblemLog {
 
     @Override
     public String toString() {
-        return String.format("ProblemLog{id=%l,name=%s,difficulty=%d,url=%s}", id, name, difficulty, url);
+        return String.format("ProblemLog{id=%l,name=%s,difficulty=%d,url=%s,timestamp=%s}", 
+                id, name, difficulty, url, timestamp.toString());
     }
     
 }
