@@ -31,6 +31,7 @@ public class ProblemLogController {
         if (problemLogOptional.isPresent()) {
             return ResponseEntity.ok(problemLogOptional.get());
         } else {
+            System.out.println("didn't find requested id");
             throw new ProblemLogNotFoundException(requestedId);
         }
     }

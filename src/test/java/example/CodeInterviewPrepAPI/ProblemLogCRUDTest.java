@@ -27,7 +27,7 @@ public class ProblemLogCRUDTest {
  
     @Test
     @Sql(statements="INSERT INTO PROBLEM_LOG (ID, NAME, DIFFICULTY, URL, TIMESTAMP) VALUES (10, '3 sum', 3.7, 'https://leetcode.com/problems/3sum/', '2004-10-19 10:23:54+02');")
-    void shouldReturnProblemLogWithAKnownId() {
+    void shouldReturnProblemLogWithKnownId() {
         ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/10", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -49,4 +49,12 @@ public class ProblemLogCRUDTest {
         OffsetDateTime expectedTimestamp = OffsetDateTime.of(2004, 10, 19, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
 		assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
+
+    @Test
+	void shouldNotReturnProblemLogWithUnknownId() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/9999", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.getBody()).isEqualTo(String.format("Could not find problem log %d", 9999));
+	}
 }
