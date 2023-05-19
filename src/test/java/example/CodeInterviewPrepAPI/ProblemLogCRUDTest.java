@@ -2,6 +2,8 @@ package example.CodeInterviewPrepAPI;
 
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -9,6 +11,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import com.jayway.jsonpath.DocumentContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
@@ -56,5 +61,32 @@ public class ProblemLogCRUDTest {
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isEqualTo(String.format("Could not find problem log %d", 9999));
+	}
+
+    @Test
+	void shouldCreateAndReturnProblemLog() throws JSONException {
+        OffsetDateTime expectedTimestamp = OffsetDateTime.of(2023, 4, 10, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject cashCardJsonObject = new JSONObject();
+		cashCardJsonObject.put("name", "4 sum");
+		cashCardJsonObject.put("difficulty", "4.0");
+		cashCardJsonObject.put("url", "https://leetcode.com/problems/4sum/");
+		cashCardJsonObject.put("timestamp", expectedTimestamp.toString());
+		HttpEntity<String> request = new HttpEntity<String>(cashCardJsonObject.toString(), headers);
+
+		ResponseEntity<String> response = restTemplate.postForEntity("/problemlog/new", request, String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		String name = documentContext.read("$.name");
+		assertThat(name).isEqualTo("4 sum");
+        Double difficulty = documentContext.read("$.difficulty");
+		assertThat(difficulty).isEqualTo(4.0);
+        String url = documentContext.read("$.url");
+		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
+
+        OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
+        assertThat(timestamp).isEqualTo(expectedTimestamp);
 	}
 }

@@ -35,4 +35,11 @@ public class ProblemLogController {
             throw new ProblemLogNotFoundException(requestedId);
         }
     }
+
+    @PostMapping("/new")
+    public ResponseEntity<ProblemLog> newCashCard(@RequestBody ProblemLog problemLog) {
+        ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        return new ResponseEntity<ProblemLog>(savedProblemLog, responseHeaders, HttpStatus.CREATED);
+    }
 }
