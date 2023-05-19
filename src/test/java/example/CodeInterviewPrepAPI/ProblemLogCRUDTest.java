@@ -19,6 +19,7 @@ import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -89,4 +90,24 @@ public class ProblemLogCRUDTest {
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         assertThat(timestamp).isEqualTo(expectedTimestamp);
 	}
+
+    @Test
+    @Sql({ "/insert_problemlog_data.sql" })
+    void shouldReturnPageOfProblemLogWithRightSizeSortedWithTimestamp() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/problemlog?page=1&size=10", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+		List<Number> ids = documentContext.read("*.id");
+        assertThat(ids.size()).isEqualTo(10);
+		List<String> timestampsAsStrings = documentContext.read("*.timestamp");
+        OffsetDateTime prevTimestamp = OffsetDateTime.parse(timestampsAsStrings.get(0));
+
+        for (int i = 1; i < timestampsAsStrings.size(); ++i) {
+            OffsetDateTime currTimestamp = OffsetDateTime.parse(timestampsAsStrings.get(i));
+            assertThat(prevTimestamp.compareTo(currTimestamp)).isEqualTo(1);
+            prevTimestamp = currTimestamp;
+        }
+    }
 }

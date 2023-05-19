@@ -24,6 +24,16 @@ public class ProblemLogController {
         this.problemLogRepository = problemLogRepository;
     }
 
+    @GetMapping
+    public ResponseEntity<Iterable<ProblemLog>> findByPage(Pageable pageable) {
+        Page<ProblemLog> page = problemLogRepository.findAll(
+            PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSortOr(Sort.by(Sort.Direction.DESC, "timestamp"))));
+        return ResponseEntity.ok(page.getContent());
+    }
+
     @GetMapping("/{requestedId}")
     public ResponseEntity<ProblemLog> findById(@PathVariable Long requestedId) {
         Optional<ProblemLog> problemLogOptional = problemLogRepository.findById(requestedId);
