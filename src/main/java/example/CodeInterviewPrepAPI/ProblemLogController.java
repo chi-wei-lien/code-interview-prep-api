@@ -47,7 +47,7 @@ public class ProblemLogController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<ProblemLog> newCashCard(@RequestBody ProblemLog problemLog) {
+    public ResponseEntity<ProblemLog> newProblemLog(@RequestBody ProblemLog problemLog) {
         ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
         HttpHeaders responseHeaders = new HttpHeaders();
         return new ResponseEntity<ProblemLog>(savedProblemLog, responseHeaders, HttpStatus.CREATED);
