@@ -126,10 +126,12 @@ public class ProblemLogCRUDTest {
 		problemLogJsonObject.put("timestamp", expectedTimestamp.toString());
 		HttpEntity<String> request = new HttpEntity<String>(problemLogJsonObject.toString(), headers);
 
-        ResponseEntity<String> response = restTemplate.exchange("/problemlog/10", HttpMethod.PUT, request, String.class);
+        ResponseEntity<String> putResponse = restTemplate.exchange("/problemlog/10", HttpMethod.PUT, request, String.class);
+        assertThat(putResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		ResponseEntity<String> getResponse = restTemplate.getForEntity("/problemlog/10", String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
 
 		Number id = documentContext.read("$.id");
 		assertThat(id).isEqualTo(10);

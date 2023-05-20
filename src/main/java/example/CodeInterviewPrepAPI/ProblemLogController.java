@@ -63,7 +63,9 @@ public class ProblemLogController {
             currProblemLog.setDifficulty(problemLog.getDifficulty());
             currProblemLog.setUrl(problemLog.getUrl());
             currProblemLog.setTimestamp(problemLog.getTimestamp());
-            return ResponseEntity.ok(currProblemLog);
+            problemLogRepository.save(currProblemLog);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            return new ResponseEntity<ProblemLog>(responseHeaders, HttpStatus.NO_CONTENT);
 
         } else {
             ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
