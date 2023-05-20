@@ -36,22 +36,17 @@ public class ProblemLogCRUDTest {
     @Sql(statements="INSERT INTO PROBLEM_LOG (ID, NAME, DIFFICULTY, URL, TIMESTAMP) VALUES (10, '3 sum', 3.7, 'https://leetcode.com/problems/3sum/', '2004-10-19 10:23:54+02');")
     void shouldReturnProblemLogWithKnownId() {
         ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/10", String.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		Number id = documentContext.read("$.id");
 		assertThat(id).isEqualTo(10);
-
 		String name = documentContext.read("$.name");
 		assertThat(name).isEqualTo("3 sum");
-
         Double difficulty = documentContext.read("$.difficulty");
 		assertThat(difficulty).isEqualTo(3.7);
-        
         String url = documentContext.read("$.url");
 		assertThat(url).isEqualTo("https://leetcode.com/problems/3sum/");
-
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         OffsetDateTime expectedTimestamp = OffsetDateTime.of(2004, 10, 19, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
 		assertThat(timestamp).isEqualTo(expectedTimestamp);
@@ -61,7 +56,6 @@ public class ProblemLogCRUDTest {
 	@Sql({ "/drop_problemlog_schema.sql", "/create_problemlog_schema.sql" })
 	void shouldNotReturnProblemLogWithUnknownId() {
 		ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/10", String.class);
-
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isEqualTo(String.format("Could not find problem log %d", 10));
 	}
@@ -88,7 +82,6 @@ public class ProblemLogCRUDTest {
 		assertThat(difficulty).isEqualTo(4.0);
         String url = documentContext.read("$.url");
 		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
-
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         assertThat(timestamp).isEqualTo(expectedTimestamp);
 	}
@@ -97,10 +90,9 @@ public class ProblemLogCRUDTest {
     @Sql({ "/insert_problemlog_data.sql" })
     void shouldReturnPageOfProblemLogWithRightSizeSortedWithTimestamp() {
         ResponseEntity<String> response = restTemplate.getForEntity("/problemlog?page=1&size=10", String.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		DocumentContext documentContext = JsonPath.parse(response.getBody());
 
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		List<Number> ids = documentContext.read("*.id");
         assertThat(ids.size()).isEqualTo(10);
 		List<String> timestampsAsStrings = documentContext.read("*.timestamp");
@@ -142,7 +134,6 @@ public class ProblemLogCRUDTest {
 		assertThat(difficulty).isEqualTo(4.0);
         String url = documentContext.read("$.url");
 		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
-
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
@@ -161,17 +152,15 @@ public class ProblemLogCRUDTest {
 		HttpEntity<String> request = new HttpEntity<String>(problemLogJsonObject.toString(), headers);
 
         ResponseEntity<String> response = restTemplate.exchange("/problemlog/10", HttpMethod.PUT, request, String.class);
-	
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-		DocumentContext documentContext = JsonPath.parse(response.getBody());
 
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		String name = documentContext.read("$.name");
 		assertThat(name).isEqualTo("4 sum");
         Double difficulty = documentContext.read("$.difficulty");
 		assertThat(difficulty).isEqualTo(4.0);
         String url = documentContext.read("$.url");
 		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
-
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
