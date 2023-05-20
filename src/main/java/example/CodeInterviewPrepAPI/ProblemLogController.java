@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,7 +55,7 @@ public class ProblemLogController {
     }
 
     @PutMapping("/{requestedId}")
-    public ResponseEntity<ProblemLog> newProblemLog(@RequestBody ProblemLog problemLog, @PathVariable Long requestedId) {
+    public ResponseEntity<ProblemLog> updateProblemLog(@RequestBody ProblemLog problemLog, @PathVariable Long requestedId) {
         Optional<ProblemLog> problemLogOptional = problemLogRepository.findById(requestedId);
 
         if (problemLogOptional.isPresent()) {
@@ -72,5 +73,17 @@ public class ProblemLogController {
             HttpHeaders responseHeaders = new HttpHeaders();
             return new ResponseEntity<ProblemLog>(savedProblemLog, responseHeaders, HttpStatus.CREATED);
         }   
+    }
+
+    @DeleteMapping("/{requestedId}")
+    public  ResponseEntity<ProblemLog> deleteProblemLog(@PathVariable Long requestedId) {
+        Optional<ProblemLog> problemLogOptional = problemLogRepository.findById(requestedId);
+        if (problemLogOptional.isPresent()) {
+            problemLogRepository.deleteById(requestedId);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            return new ResponseEntity<ProblemLog>(responseHeaders, HttpStatus.NO_CONTENT);
+        } else {
+            throw new ProblemLogNotFoundException(requestedId);
+        }
     }
 }

@@ -58,11 +58,12 @@ public class ProblemLogCRUDTest {
     }
 
     @Test
+	@Sql({ "/drop_problemlog_schema.sql", "/create_problemlog_schema.sql" })
 	void shouldNotReturnProblemLogWithUnknownId() {
-		ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/9999", String.class);
+		ResponseEntity<String> response = restTemplate.getForEntity("/problemlog/10", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(response.getBody()).isEqualTo(String.format("Could not find problem log %d", 9999));
+		assertThat(response.getBody()).isEqualTo(String.format("Could not find problem log %d", 10));
 	}
 
     @Test
@@ -174,4 +175,27 @@ public class ProblemLogCRUDTest {
         OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
         assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
+
+	@Test
+	@Sql(scripts = {"/drop_problemlog_schema.sql", "/create_problemlog_schema.sql"}, 
+			statements="INSERT INTO PROBLEM_LOG (ID, NAME, DIFFICULTY, URL, TIMESTAMP) VALUES (10, '3 sum', 3.7, 'https://leetcode.com/problems/3sum/', '2004-10-19 10:23:54+02');")
+	void shouldDeleteProblemLogWithKnownId() {
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> request = new HttpEntity<String>("", headers);
+		ResponseEntity<String> deleteResponse = restTemplate.exchange("/problemlog/10", HttpMethod.DELETE, request, String.class);
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		
+		ResponseEntity<String> getResponse = restTemplate.getForEntity("/problemlog/10", String.class);
+		assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(getResponse.getBody()).isEqualTo(String.format("Could not find problem log %d", 10));
+	}
+
+	@Test
+	@Sql({"/drop_problemlog_schema.sql", "/create_problemlog_schema.sql"}) 
+	void shouldNotDeleteProblemLogWithUnknownId() {
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> request = new HttpEntity<String>("", headers);
+		ResponseEntity<String> deleteResponse = restTemplate.exchange("/problemlog/10", HttpMethod.DELETE, request, String.class);
+		assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
 }
