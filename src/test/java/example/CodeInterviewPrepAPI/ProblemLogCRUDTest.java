@@ -17,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
+import org.springframework.http.HttpMethod;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -69,14 +70,14 @@ public class ProblemLogCRUDTest {
         OffsetDateTime expectedTimestamp = OffsetDateTime.of(2023, 4, 10, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		JSONObject cashCardJsonObject = new JSONObject();
-		cashCardJsonObject.put("name", "4 sum");
-		cashCardJsonObject.put("difficulty", "4.0");
-		cashCardJsonObject.put("url", "https://leetcode.com/problems/4sum/");
-		cashCardJsonObject.put("timestamp", expectedTimestamp.toString());
-		HttpEntity<String> request = new HttpEntity<String>(cashCardJsonObject.toString(), headers);
+		JSONObject problemLogJsonObject = new JSONObject();
+		problemLogJsonObject.put("name", "4 sum");
+		problemLogJsonObject.put("difficulty", "4.0");
+		problemLogJsonObject.put("url", "https://leetcode.com/problems/4sum/");
+		problemLogJsonObject.put("timestamp", expectedTimestamp.toString());
+		HttpEntity<String> request = new HttpEntity<String>(problemLogJsonObject.toString(), headers);
 
-		ResponseEntity<String> response = restTemplate.postForEntity("/problemlog/new", request, String.class);
+		ResponseEntity<String> response = restTemplate.postForEntity("/problemlog", request, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -109,5 +110,66 @@ public class ProblemLogCRUDTest {
             assertThat(prevTimestamp.compareTo(currTimestamp)).isEqualTo(1);
             prevTimestamp = currTimestamp;
         }
+    }
+
+	@Test
+	@Sql(scripts = {"/drop_problemlog_schema.sql", "/create_problemlog_schema.sql"}, 
+			statements="INSERT INTO PROBLEM_LOG (ID, NAME, DIFFICULTY, URL, TIMESTAMP) VALUES (10, '3 sum', 3.7, 'https://leetcode.com/problems/3sum/', '2004-10-19 10:23:54+02');")
+    void shouldUpdateProblemLog() throws JSONException {
+		OffsetDateTime expectedTimestamp = OffsetDateTime.of(2023, 4, 10, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject problemLogJsonObject = new JSONObject();
+		problemLogJsonObject.put("name", "4 sum");
+		problemLogJsonObject.put("difficulty", "4.0");
+		problemLogJsonObject.put("url", "https://leetcode.com/problems/4sum/");
+		problemLogJsonObject.put("timestamp", expectedTimestamp.toString());
+		HttpEntity<String> request = new HttpEntity<String>(problemLogJsonObject.toString(), headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("/problemlog/10", HttpMethod.PUT, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+		Number id = documentContext.read("$.id");
+		assertThat(id).isEqualTo(10);
+		String name = documentContext.read("$.name");
+		assertThat(name).isEqualTo("4 sum");
+        Double difficulty = documentContext.read("$.difficulty");
+		assertThat(difficulty).isEqualTo(4.0);
+        String url = documentContext.read("$.url");
+		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
+
+        OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
+        assertThat(timestamp).isEqualTo(expectedTimestamp);
+    }
+
+	@Test
+	@Sql({ "/drop_problemlog_schema.sql", "/create_problemlog_schema.sql" })
+	void shouldCreateProblemLogWhenUpdateWithUnknownId() throws JSONException {
+		OffsetDateTime expectedTimestamp = OffsetDateTime.of(2023, 4, 10, 10, 23, 54, 0, ZoneOffset.of("+02:00"));
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject problemLogJsonObject = new JSONObject();
+		problemLogJsonObject.put("name", "4 sum");
+		problemLogJsonObject.put("difficulty", "4.0");
+		problemLogJsonObject.put("url", "https://leetcode.com/problems/4sum/");
+		problemLogJsonObject.put("timestamp", expectedTimestamp.toString());
+		HttpEntity<String> request = new HttpEntity<String>(problemLogJsonObject.toString(), headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("/problemlog/10", HttpMethod.PUT, request, String.class);
+	
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+
+		String name = documentContext.read("$.name");
+		assertThat(name).isEqualTo("4 sum");
+        Double difficulty = documentContext.read("$.difficulty");
+		assertThat(difficulty).isEqualTo(4.0);
+        String url = documentContext.read("$.url");
+		assertThat(url).isEqualTo("https://leetcode.com/problems/4sum/");
+
+        OffsetDateTime timestamp = OffsetDateTime.parse(documentContext.read("$.timestamp"));
+        assertThat(timestamp).isEqualTo(expectedTimestamp);
     }
 }

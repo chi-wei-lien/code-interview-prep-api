@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,15 +42,33 @@ public class ProblemLogController {
         if (problemLogOptional.isPresent()) {
             return ResponseEntity.ok(problemLogOptional.get());
         } else {
-            System.out.println("didn't find requested id");
             throw new ProblemLogNotFoundException(requestedId);
         }
     }
 
-    @PostMapping("/new")
+    @PostMapping
     public ResponseEntity<ProblemLog> newProblemLog(@RequestBody ProblemLog problemLog) {
         ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
         HttpHeaders responseHeaders = new HttpHeaders();
         return new ResponseEntity<ProblemLog>(savedProblemLog, responseHeaders, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{requestedId}")
+    public ResponseEntity<ProblemLog> newProblemLog(@RequestBody ProblemLog problemLog, @PathVariable Long requestedId) {
+        Optional<ProblemLog> problemLogOptional = problemLogRepository.findById(requestedId);
+
+        if (problemLogOptional.isPresent()) {
+            ProblemLog currProblemLog = problemLogOptional.get();
+            currProblemLog.setName(problemLog.getName());
+            currProblemLog.setDifficulty(problemLog.getDifficulty());
+            currProblemLog.setUrl(problemLog.getUrl());
+            currProblemLog.setTimestamp(problemLog.getTimestamp());
+            return ResponseEntity.ok(currProblemLog);
+
+        } else {
+            ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            return new ResponseEntity<ProblemLog>(savedProblemLog, responseHeaders, HttpStatus.CREATED);
+        }   
     }
 }
