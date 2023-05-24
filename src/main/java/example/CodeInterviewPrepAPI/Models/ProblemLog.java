@@ -2,6 +2,7 @@ package example.CodeInterviewPrepAPI;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -12,8 +13,9 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "problem_log")
 public class ProblemLog {
-
-    private @Id @GeneratedValue Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     private String name;
     private Double difficulty;
     private String url;
