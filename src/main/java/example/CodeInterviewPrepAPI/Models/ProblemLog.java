@@ -4,14 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import java.util.Objects;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "problem_log")
+@Table(name = "problem_logs")
 public class ProblemLog {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
