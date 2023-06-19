@@ -1,9 +1,6 @@
 /* Learned from https://www.bezkoder.com/spring-boot-security-jwt/#Create_JWT_Utility_class */
 package example.CodeInterviewPrepAPI.Controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import example.CodeInterviewPrepAPI.Exceptions.EmailTakenException;
 import example.CodeInterviewPrepAPI.Exceptions.UsernameTakenException;
 import example.CodeInterviewPrepAPI.Models.User;
@@ -17,7 +14,6 @@ import example.CodeInterviewPrepAPI.Security.PasswordValidator;
 import example.CodeInterviewPrepAPI.Security.UserDetailsImpl;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-// import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,9 +40,6 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-//    @Autowired
-//    RoleRepository roleRepository;
-
     @Autowired
     PasswordEncoder encoder;
 
@@ -64,10 +57,6 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
-        List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
@@ -108,14 +97,9 @@ public class AuthController {
         userRepository.save(user);
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        return new ResponseEntity<UserInfoResponse>(new UserInfoResponse(user.getId(),
+        return new ResponseEntity<>(new UserInfoResponse(user.getId(),
                 user.getUsername(),
                 user.getEmail()), responseHeaders, HttpStatus.CREATED);
-
-        // return ResponseEntity.ok().body(new UserInfoResponse(user.getId(),
-        //         user.getUsername(),
-        //         user.getEmail(),
-        //         roles));
     }
 
     @PostMapping("/signout")

@@ -72,7 +72,6 @@ public class ProblemLogController {
             problemLogRepository.save(currProblemLog);
             HttpHeaders responseHeaders = new HttpHeaders();
             return new ResponseEntity<ProblemLog>(responseHeaders, HttpStatus.NO_CONTENT);
-
         } else {
             ProblemLog savedProblemLog = problemLogRepository.save(problemLog);
             HttpHeaders responseHeaders = new HttpHeaders();

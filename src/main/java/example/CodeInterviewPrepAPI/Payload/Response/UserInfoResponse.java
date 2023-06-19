@@ -4,7 +4,6 @@ public class UserInfoResponse {
 	private Long id;
 	private String username;
 	private String email;
-//	private List<String> roles;
 
 	public UserInfoResponse(Long id, String username, String email) {
 		this.id = id;

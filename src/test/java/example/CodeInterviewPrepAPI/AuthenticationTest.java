@@ -17,10 +17,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.context.jdbc.SqlMergeMode.MergeMode;
-import org.springframework.http.HttpMethod;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

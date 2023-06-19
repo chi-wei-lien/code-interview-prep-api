@@ -4,12 +4,12 @@ import example.CodeInterviewPrepAPI.Exceptions.EmailTakenException;
 import example.CodeInterviewPrepAPI.Exceptions.InvalidPasswordException;
 import example.CodeInterviewPrepAPI.Exceptions.UsernameTakenException;
 import example.CodeInterviewPrepAPI.Payload.Response.MessageResponse;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class AuthenticationAdvice {
