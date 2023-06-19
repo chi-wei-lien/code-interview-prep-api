@@ -1,5 +1,8 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Controllers;
 
+import example.CodeInterviewPrepAPI.Exceptions.ProblemLogNotFoundException;
+import example.CodeInterviewPrepAPI.Models.ProblemLog;
+import example.CodeInterviewPrepAPI.Repositories.ProblemLogRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;

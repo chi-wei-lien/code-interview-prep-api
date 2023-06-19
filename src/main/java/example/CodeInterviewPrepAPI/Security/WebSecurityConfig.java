@@ -1,5 +1,5 @@
 /* Learned from https://www.bezkoder.com/spring-boot-security-jwt/#Create_JWT_Utility_class */
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

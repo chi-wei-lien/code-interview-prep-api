@@ -1,6 +1,7 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Repositories;
 
 import java.util.Optional;
+import example.CodeInterviewPrepAPI.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Payload.Request;
 
 import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +15,7 @@ public class SignupRequest {
     @Email
     private String email;
     
-    private Set<String> role;
+//    private Set<String> role;
     
     @NotBlank
     @Size(min = 6, max = 40)
@@ -33,9 +33,9 @@ public class SignupRequest {
         return password;
     }
     
-    public Set<String> getRole() {
-        return this.role;
-    }
+//    public Set<String> getRole() {
+//        return this.role;
+//    }
 
     public void setUsername(String username) {
         this.username = username;
@@ -49,7 +49,7 @@ public class SignupRequest {
         this.password = password;
     }
     
-    public void setRole(Set<String> role) {
-        this.role = role;
-    }
+//    public void setRole(Set<String> role) {
+//        this.role = role;
+//    }
 }

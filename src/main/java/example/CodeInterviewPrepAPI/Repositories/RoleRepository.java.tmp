@@ -1,6 +1,9 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Repositories;
 
 import java.util.Optional;
+
+import example.CodeInterviewPrepAPI.Enums.ERole;
+import example.CodeInterviewPrepAPI.Models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

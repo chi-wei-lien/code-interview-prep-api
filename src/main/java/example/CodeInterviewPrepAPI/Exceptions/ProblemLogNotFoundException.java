@@ -1,7 +1,7 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Exceptions;
 
 public class ProblemLogNotFoundException extends RuntimeException{
-    ProblemLogNotFoundException(Long requestedId) {
+    public ProblemLogNotFoundException(Long requestedId) {
         super(String.format("Could not find problem log %d", requestedId));
     }
 }

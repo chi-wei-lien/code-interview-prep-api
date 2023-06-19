@@ -1,5 +1,6 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Models;
 
+import example.CodeInterviewPrepAPI.Enums.ERole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;

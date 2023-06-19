@@ -1,4 +1,4 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Payload.Request;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,5 +1,7 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Security;
 
+import example.CodeInterviewPrepAPI.Models.User;
+import example.CodeInterviewPrepAPI.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (userOptional.isPresent()) {
             return UserDetailsImpl.build(userOptional.get());
         } else {
-            throw new UsernameNotFoundException(String.format("User Not Found with username: %s" + username));
+            throw new UsernameNotFoundException(String.format("User Not Found with username: %s", username));
         }
     }
 }

@@ -1,6 +1,7 @@
 /* Learned from https://www.bezkoder.com/spring-boot-security-jwt/#Create_JWT_Utility_class */
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Security;
 
+import example.CodeInterviewPrepAPI.Models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,27 +25,33 @@ public class UserDetailsImpl implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
-        Collection<? extends GrantedAuthority> authorities) {
+//    public UserDetailsImpl(Long id, String username, String email, String password,
+//        Collection<? extends GrantedAuthority> authorities) {
+//        this.id = id;
+//        this.username = username;
+//        this.email = email;
+//        this.password = password;
+//        this.authorities = authorities;
+//    }
+
+    public UserDetailsImpl(Long id, String username, String email, String password) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
     }
 
     public static UserDetailsImpl build(User user) {
         // converting Set<Role> into List<GrantedAuthority> to work with Spring Security
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-            .collect(Collectors.toList());
+//        List<GrantedAuthority> authorities = user.getRoles().stream()
+//            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+//            .collect(Collectors.toList());
 
         return new UserDetailsImpl(
             user.getId(), 
             user.getUsername(), 
             user.getEmail(),
-            user.getPassword(), 
-            authorities);
+            user.getPassword());
     }
 
     @Override
@@ -93,8 +100,7 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean equals(Object incomingObject) {
         if (this == incomingObject) return true;
-        if (!(incomingObject instanceof UserDetailsImpl) || 
-                incomingObject == null) return false;
+        if (!(incomingObject instanceof UserDetailsImpl)) return false;
 
         UserDetailsImpl incomingUserDetailsImpl = (UserDetailsImpl) incomingObject;
         return Objects.equals(id, incomingUserDetailsImpl.id);

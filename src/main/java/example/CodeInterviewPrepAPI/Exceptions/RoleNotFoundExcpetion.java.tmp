@@ -1,0 +1,7 @@
+package example.CodeInterviewPrepAPI.Exceptions;
+
+public class RoleNotFoundExcpetion extends RuntimeException{
+    RoleNotFoundExcpetion(String unfoundRole) {
+        super(String.format("Role %s is not found"));
+    }
+}

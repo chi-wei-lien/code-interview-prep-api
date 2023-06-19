@@ -1,4 +1,4 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Enums;
 
 public enum ERole {
     ROLE_USER,

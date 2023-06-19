@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="main" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://localhost:5432/code-interview-prep" />
+      <env name="SPRING_DATASOURCE_USERNAME" value="wilson" />
+      <env name="SPRING_DATASOURCE_PASSWORD" value="willy3124" />
+      <env name="SPRING_DATASOURCE_TEST_URL" value="jdbc:postgresql://localhost:5432/code-interview-prep-test" />
+      <env name="JWT_SECRET" value="aawefw224If25bV3t9s11dwdpsaPbpb" />
+    </envs>
+    <module name="CodeInterviewPrepAPI.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="example.CodeInterviewPrepAPI.CodeInterviewPrepApiApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

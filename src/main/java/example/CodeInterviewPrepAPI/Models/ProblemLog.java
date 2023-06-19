@@ -1,4 +1,4 @@
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

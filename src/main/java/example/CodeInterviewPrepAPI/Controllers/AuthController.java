@@ -1,13 +1,26 @@
 /* Learned from https://www.bezkoder.com/spring-boot-security-jwt/#Create_JWT_Utility_class */
-package example.CodeInterviewPrepAPI;
+package example.CodeInterviewPrepAPI.Controllers;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import example.CodeInterviewPrepAPI.Exceptions.EmailTakenException;
+import example.CodeInterviewPrepAPI.Exceptions.UsernameTakenException;
+import example.CodeInterviewPrepAPI.Models.User;
+import example.CodeInterviewPrepAPI.Payload.Request.LoginRequest;
+import example.CodeInterviewPrepAPI.Payload.Request.SignupRequest;
+import example.CodeInterviewPrepAPI.Payload.Response.MessageResponse;
+import example.CodeInterviewPrepAPI.Payload.Response.UserInfoResponse;
+import example.CodeInterviewPrepAPI.Repositories.UserRepository;
+import example.CodeInterviewPrepAPI.Security.JwtUtils;
+import example.CodeInterviewPrepAPI.Security.PasswordValidator;
+import example.CodeInterviewPrepAPI.Security.UserDetailsImpl;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+// import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,16 +44,14 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
+//    @Autowired
+//    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder encoder;
 
     @Autowired
     JwtUtils jwtUtils;
-
-    
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -61,53 +72,50 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
                                           userDetails.getUsername(),
-                                          userDetails.getEmail(),
-                                          roles));
+                                          userDetails.getEmail()));
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
+        String username = signUpRequest.getUsername();
+        if (username == null) {
+            return ResponseEntity.badRequest().body(new ConstraintViolationException("No username is provided", null));
+        }
+        if (userRepository.existsByUsername(username)) {
+            return ResponseEntity.badRequest().body(new UsernameTakenException(username));
         }
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+        String email = signUpRequest.getEmail();
+        if (userRepository.existsByEmail(email)) {
+            return ResponseEntity.badRequest().body(new EmailTakenException(email));
+        }
+        if (email == null) {
+            return ResponseEntity.badRequest().body(new ConstraintViolationException("No email is provided", null));
         }
 
         // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                            signUpRequest.getEmail(),
-                            encoder.encode(signUpRequest.getPassword()));
-
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                case "admin":
-                    Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(adminRole);
-
-                    break;
-                default:
-                    Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    roles.add(userRole);
-                }
-          });
+        String password = signUpRequest.getPassword();
+        if (password == null) {
+            return ResponseEntity.badRequest().body(new ConstraintViolationException("No password is provided", null));
         }
 
-        user.setRoles(roles);
+        PasswordValidator.validate(password);
+
+        User user = new User(signUpRequest.getUsername(),
+                signUpRequest.getEmail(),
+                encoder.encode(password));
+
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        HttpHeaders responseHeaders = new HttpHeaders();
+        return new ResponseEntity<UserInfoResponse>(new UserInfoResponse(user.getId(),
+                user.getUsername(),
+                user.getEmail()), responseHeaders, HttpStatus.CREATED);
+
+        // return ResponseEntity.ok().body(new UserInfoResponse(user.getId(),
+        //         user.getUsername(),
+        //         user.getEmail(),
+        //         roles));
     }
 
     @PostMapping("/signout")
