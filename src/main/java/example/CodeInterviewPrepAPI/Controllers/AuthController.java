@@ -47,28 +47,28 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
+                .authenticate(new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword())
+                );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
-                                          userDetails.getUsername(),
-                                          userDetails.getEmail()));
+                        userDetails.getUsername(),
+                        userDetails.getEmail()));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
         String username = signUpRequest.getUsername();
         if (username == null) {
-            return ResponseEntity.badRequest().body(new ConstraintViolationException("No username is provided", null));
+            return ResponseEntity.badRequest().body(new ConstraintViolationException(
+                    "No username is provided",
+                    null));
         }
         if (userRepository.existsByUsername(username)) {
             return ResponseEntity.badRequest().body(new UsernameTakenException(username));
@@ -79,13 +79,17 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new EmailTakenException(email));
         }
         if (email == null) {
-            return ResponseEntity.badRequest().body(new ConstraintViolationException("No email is provided", null));
+            return ResponseEntity.badRequest().body(new ConstraintViolationException(
+                    "No email is provided",
+                    null));
         }
 
         // Create new user's account
         String password = signUpRequest.getPassword();
         if (password == null) {
-            return ResponseEntity.badRequest().body(new ConstraintViolationException("No password is provided", null));
+            return ResponseEntity.badRequest().body(new ConstraintViolationException(
+                    "No password is provided",
+                    null));
         }
 
         PasswordValidator.validate(password);

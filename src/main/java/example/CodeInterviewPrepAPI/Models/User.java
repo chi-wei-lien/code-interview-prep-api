@@ -95,4 +95,8 @@ public class User {
 //    public void setRoles(Set<Role> roles) {
 //        this.roles = roles;
 //    }
+    @Override
+    public String toString() {
+        return String.format("username: %s; password: %s", username, password);
+    }
 }

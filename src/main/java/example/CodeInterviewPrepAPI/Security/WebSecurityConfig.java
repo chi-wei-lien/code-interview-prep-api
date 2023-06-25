@@ -28,14 +28,14 @@ public class WebSecurityConfig {
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-    
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        
+
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-    
+
         return authProvider;
     }
 
@@ -51,21 +51,23 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(unAuthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            // dont authenticate this particular request so user can log in
-            .authorizeRequests()
-            // .requestMatchers("/problemlog/**").permitAll()
-            .requestMatchers("/auth/**").permitAll()
-            // any other requests need to be authenticated
-            .anyRequest().authenticated();
-        
+        http.cors().and()
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unAuthorizedHandler).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                // dont authenticate this particular request so user can log in
+                .authorizeHttpRequests()
+                //             .requestMatchers("/problemlog/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                // any other requests need to be authenticated
+                .anyRequest().authenticated();
+
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
 
         // Add a filter to validate the tokens with every request
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationJwtTokenFilter(),
+                UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
