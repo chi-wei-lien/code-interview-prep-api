@@ -1,11 +1,7 @@
 package example.CodeInterviewPrepAPI.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 import java.time.OffsetDateTime;
 
@@ -18,6 +14,10 @@ public class ProblemLog {
     private String name;
     private Double difficulty;
     private String url;
+
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+    private User user;
 
     @Column(name = "timestamp", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime timestamp;
@@ -94,5 +94,4 @@ public class ProblemLog {
         return String.format("ProblemLog{id=%l,name=%s,difficulty=%d,url=%s,timestamp=%s}", 
                 id, name, difficulty, url, timestamp.toString());
     }
-    
 }
